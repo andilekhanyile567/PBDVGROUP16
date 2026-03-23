@@ -1,0 +1,758 @@
+{% extends "base.html" %}
+
+{% block title %}Exercise Log - DUT Wellness{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Professional Business Styling */
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .page-header h1 {
+        font-size: 1.875rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+    
+    .page-header p {
+        color: #6b7280;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    
+    .stat-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f97316;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-unit {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-weight: 400;
+    }
+    
+    /* Exercise Cards */
+    .exercise-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .exercise-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-color: #f97316;
+    }
+    
+    .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .exercise-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .exercise-icon {
+        font-size: 2rem;
+    }
+    
+    .exercise-name {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #111827;
+    }
+    
+    .intensity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    .intensity-low {
+        background: #f0fdf4;
+        color: #166534;
+    }
+    
+    .intensity-medium {
+        background: #fef9c3;
+        color: #854d0e;
+    }
+    
+    .intensity-high {
+        background: #fef2f2;
+        color: #991b1b;
+    }
+    
+    .exercise-stats {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .exercise-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    
+    .exercise-stat i {
+        width: 1rem;
+        color: #f97316;
+    }
+    
+    .exercise-notes {
+        background: #f9fafb;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin: 0.75rem 0;
+        border-left: 3px solid #f97316;
+    }
+    
+    .exercise-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+        color: #9ca3af;
+        margin-top: 0.5rem;
+    }
+    
+    /* Button Styles */
+    .btn-primary {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        color: white;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+    
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        border: 1px solid #e5e7eb;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: #ffffff;
+        border-radius: 1rem;
+        max-width: 550px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #9ca3af;
+        transition: color 0.2s;
+    }
+    
+    .modal-close:hover {
+        color: #374151;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-label .required {
+        color: #ef4444;
+    }
+    
+    .form-input, .form-textarea, .form-select {
+        width: 100%;
+        padding: 0.625rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+    
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+        outline: none;
+        border-color: #f97316;
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    
+    .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .radio-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: #374151;
+    }
+    
+    .radio-label input[type="radio"] {
+        cursor: pointer;
+    }
+    
+    .helper-text {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        margin-top: 0.25rem;
+    }
+    
+    .modal-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: #f9fafb;
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state-text {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Toast Notification */
+    .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: #10b981;
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 1100;
+        animation: slideIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .exercise-header {
+            flex-direction: column;
+        }
+        
+        .exercise-stats {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .radio-group {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1>Exercise Log</h1>
+                <p>Track your physical activity and monitor fitness progress</p>
+            </div>
+            <button onclick="openAddExerciseModal()" class="btn-primary">
+                <i class="fas fa-plus"></i>
+                Log Exercise
+            </button>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-label">Total Sessions</div>
+            <div class="stat-value" id="totalSessions">0</div>
+            <div class="stat-unit">workouts logged</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-label">Total Minutes</div>
+            <div class="stat-value" id="totalMinutes">0</div>
+            <div class="stat-unit">minutes active</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-label">Calories Burned</div>
+            <div class="stat-value" id="totalCaloriesBurned">0</div>
+            <div class="stat-unit">kcal total</div>
+        </div>
+    </div>
+    
+    <!-- Exercise Logs List -->
+    <div id="exerciseLogsList">
+        <!-- Logs will be loaded here -->
+    </div>
+</div>
+
+<!-- Add Exercise Modal -->
+<div id="addExerciseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Log Exercise Session</h3>
+            <button onclick="closeAddExerciseModal()" class="modal-close">&times;</button>
+        </div>
+        
+        <form id="addExerciseForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Exercise Type <span class="required">*</span></label>
+                    <select id="exerciseType" required class="form-select">
+                        <option value="">Select exercise type</option>
+                        <option value="Running">🏃 Running</option>
+                        <option value="Walking">🚶 Walking</option>
+                        <option value="Cycling">🚴 Cycling</option>
+                        <option value="Swimming">🏊 Swimming</option>
+                        <option value="Weight Training">💪 Weight Training</option>
+                        <option value="Yoga">🧘 Yoga</option>
+                        <option value="Cardio">💓 Cardio</option>
+                        <option value="Sports">⚽ Sports</option>
+                        <option value="Other">✨ Other</option>
+                    </select>
+                    <input type="text" id="customExerciseType" placeholder="Enter exercise type" 
+                           class="form-input mt-2 hidden">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Duration <span class="required">*</span></label>
+                    <input type="number" id="duration" required min="1" max="480" 
+                           placeholder="Minutes spent exercising" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Intensity Level</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="intensity" value="low"> Low
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="intensity" value="medium" checked> Medium
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="intensity" value="high"> High
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Calories Burned (approx)</label>
+                    <input type="number" id="caloriesBurned" placeholder="Auto-calculated or manual" 
+                           class="form-input">
+                    <div class="helper-text">
+                        <i class="fas fa-calculator"></i> Leave empty for auto-calculation based on duration and intensity
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="exerciseNotes" rows="2" 
+                              placeholder="How did it feel? Any achievements? What could improve?" 
+                              class="form-textarea"></textarea>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" onclick="closeAddExerciseModal()" class="btn-secondary">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Exercise
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function loadExercises() {
+    fetch('/api/exercise')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('totalSessions').textContent = data.length;
+            
+            const totalMinutes = data.reduce((sum, e) => sum + (e.duration_minutes || 0), 0);
+            const totalCalories = data.reduce((sum, e) => sum + (e.calories_burned || 0), 0);
+            document.getElementById('totalMinutes').textContent = totalMinutes;
+            document.getElementById('totalCaloriesBurned').textContent = totalCalories;
+            
+            const container = document.getElementById('exerciseLogsList');
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏃</div>
+                        <div class="empty-state-text">No exercise logs yet. Start tracking your fitness journey!</div>
+                        <button onclick="openAddExerciseModal()" class="btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-plus"></i> Log Your First Workout
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = data.map(log => `
+                <div class="exercise-card">
+                    <div class="exercise-header">
+                        <div class="exercise-title">
+                            <span class="exercise-icon">${getExerciseIcon(log.exercise_type)}</span>
+                            <span class="exercise-name">${escapeHtml(log.exercise_type)}</span>
+                        </div>
+                        <span class="intensity-badge intensity-${log.intensity || 'medium'}">
+                            <i class="fas fa-chart-line"></i>
+                            ${log.intensity ? log.intensity.charAt(0).toUpperCase() + log.intensity.slice(1) : 'Medium'} Intensity
+                        </span>
+                    </div>
+                    
+                    <div class="exercise-stats">
+                        <div class="exercise-stat">
+                            <i class="far fa-clock"></i>
+                            ${log.duration_minutes} minutes
+                        </div>
+                        ${log.calories_burned ? `
+                            <div class="exercise-stat">
+                                <i class="fas fa-fire"></i>
+                                ${log.calories_burned} kcal burned
+                            </div>
+                        ` : ''}
+                        <div class="exercise-stat">
+                            <i class="fas fa-tachometer-alt"></i>
+                            ${Math.round(log.duration_minutes / 60 * 10)} pts earned
+                        </div>
+                    </div>
+                    
+                    ${log.notes ? `
+                        <div class="exercise-notes">
+                            <i class="fas fa-pen" style="margin-right: 0.5rem;"></i>
+                            ${escapeHtml(log.notes)}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="exercise-date">
+                        <i class="far fa-calendar-alt"></i>
+                        ${formatDate(log.date)}
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function getExerciseIcon(type) {
+    const icons = {
+        'Running': '🏃',
+        'Walking': '🚶',
+        'Cycling': '🚴',
+        'Swimming': '🏊',
+        'Weight Training': '💪',
+        'Yoga': '🧘',
+        'Cardio': '💓',
+        'Sports': '⚽'
+    };
+    return icons[type] || '🏋️';
+}
+
+document.getElementById('exerciseType').addEventListener('change', function() {
+    const customField = document.getElementById('customExerciseType');
+    if (this.value === 'Other') {
+        customField.classList.remove('hidden');
+        customField.required = true;
+    } else {
+        customField.classList.add('hidden');
+        customField.required = false;
+    }
+});
+
+document.getElementById('duration').addEventListener('input', function() {
+    const duration = parseInt(this.value);
+    const intensity = document.querySelector('input[name="intensity"]:checked').value;
+    const caloriesField = document.getElementById('caloriesBurned');
+    
+    if (duration && !caloriesField.value) {
+        let multiplier = intensity === 'low' ? 5 : (intensity === 'medium' ? 8 : 12);
+        const estimatedCalories = duration * multiplier;
+        caloriesField.placeholder = `Estimated: ${estimatedCalories} kcal`;
+    }
+});
+
+document.querySelectorAll('input[name="intensity"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.getElementById('duration').dispatchEvent(new Event('input'));
+    });
+});
+
+document.getElementById('addExerciseForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let exerciseType = document.getElementById('exerciseType').value;
+    if (exerciseType === 'Other') {
+        exerciseType = document.getElementById('customExerciseType').value;
+        if (!exerciseType) {
+            showToast('Please enter the exercise type', 'error');
+            return;
+        }
+    }
+    
+    const duration = parseInt(document.getElementById('duration').value);
+    if (!duration || duration < 1) {
+        showToast('Please enter a valid duration', 'error');
+        return;
+    }
+    
+    const exerciseData = {
+        exercise_type: exerciseType,
+        duration_minutes: duration,
+        intensity: document.querySelector('input[name="intensity"]:checked').value,
+        calories_burned: document.getElementById('caloriesBurned').value ? 
+                         parseInt(document.getElementById('caloriesBurned').value) : null,
+        notes: document.getElementById('exerciseNotes').value
+    };
+    
+    fetch('/api/exercise', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(exerciseData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        const points = Math.floor(exerciseData.duration_minutes / 10);
+        showToast(`Exercise logged successfully! +${points} point${points > 1 ? 's' : ''}`, 'success');
+        closeAddExerciseModal();
+        document.getElementById('addExerciseForm').reset();
+        document.getElementById('exerciseType').value = '';
+        document.querySelector('input[name="intensity"][value="medium"]').checked = true;
+        loadExercises();
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+function openAddExerciseModal() {
+    document.getElementById('addExerciseModal').classList.add('active');
+}
+
+function closeAddExerciseModal() {
+    document.getElementById('addExerciseModal').classList.remove('active');
+    document.getElementById('addExerciseForm').reset();
+    document.getElementById('exerciseType').value = '';
+    document.querySelector('input[name="intensity"][value="medium"]').checked = true;
+    const customField = document.getElementById('customExerciseType');
+    customField.classList.add('hidden');
+    customField.required = false;
+}
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-ZA', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', loadExercises);
+</script>
+{% endblock %}

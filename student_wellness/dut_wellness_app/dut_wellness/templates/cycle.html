@@ -1,0 +1,734 @@
+{% extends "base.html" %}
+
+{% block title %}Menstrual Cycle Tracker - DUT Wellness{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Professional Business Styling */
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .page-header h1 {
+        font-size: 1.875rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+    
+    .page-header p {
+        color: #6b7280;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    
+    .stat-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ec4899;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-unit {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-weight: 400;
+    }
+    
+    /* Cycle Cards */
+    .cycle-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .cycle-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-color: #ec4899;
+    }
+    
+    .cycle-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .cycle-day {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .cycle-icon {
+        font-size: 1.5rem;
+    }
+    
+    .cycle-number {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #ec4899;
+    }
+    
+    .flow-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    .flow-spotting { background: #fef3c7; color: #92400e; }
+    .flow-light { background: #fce7f3; color: #9d174d; }
+    .flow-medium { background: #fbcfe8; color: #be185d; }
+    .flow-heavy { background: #f9a8d4; color: #831843; }
+    
+    .cycle-details {
+        margin-bottom: 0.75rem;
+    }
+    
+    .detail-section {
+        margin-bottom: 0.75rem;
+    }
+    
+    .detail-title {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+        margin-bottom: 0.5rem;
+    }
+    
+    .symptom-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .symptom-tag {
+        background: #f3f4f6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        font-size: 0.7rem;
+        color: #374151;
+    }
+    
+    .mood-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        background: #f3f4f6;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+    }
+    
+    .cycle-notes {
+        background: #f9fafb;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin: 0.75rem 0;
+        border-left: 3px solid #ec4899;
+    }
+    
+    .cycle-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+        color: #9ca3af;
+        margin-top: 0.5rem;
+    }
+    
+    /* Button Styles */
+    .btn-primary {
+        background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        color: white;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+    }
+    
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        border: 1px solid #e5e7eb;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: #ffffff;
+        border-radius: 1rem;
+        max-width: 550px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #9ca3af;
+        transition: color 0.2s;
+    }
+    
+    .modal-close:hover {
+        color: #374151;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-label .required {
+        color: #ef4444;
+    }
+    
+    .form-input, .form-textarea, .form-select {
+        width: 100%;
+        padding: 0.625rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+    
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+        outline: none;
+        border-color: #ec4899;
+        box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+    }
+    
+    .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: #374151;
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+        cursor: pointer;
+    }
+    
+    .modal-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: #f9fafb;
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state-text {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Toast Notification */
+    .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: #10b981;
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 1100;
+        animation: slideIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .checkbox-group {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .cycle-header {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1>Menstrual Cycle Tracker</h1>
+                <p>Track your cycle, symptoms, and patterns for better reproductive health</p>
+            </div>
+            <button onclick="openAddCycleModal()" class="btn-primary">
+                <i class="fas fa-plus"></i>
+                Log Cycle Day
+            </button>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-label">Current Day</div>
+            <div class="stat-value" id="currentDay">-</div>
+            <div class="stat-unit">of cycle</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔄</div>
+            <div class="stat-label">Average Cycle Length</div>
+            <div class="stat-value" id="cycleLength">-</div>
+            <div class="stat-unit">days</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-label">Total Logs</div>
+            <div class="stat-value" id="totalLogs">0</div>
+            <div class="stat-unit">entries</div>
+        </div>
+    </div>
+    
+    <!-- Cycle Logs List -->
+    <div id="cycleLogsList">
+        <!-- Logs will be loaded here -->
+    </div>
+</div>
+
+<!-- Add Cycle Modal -->
+<div id="addCycleModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Log Cycle Day</h3>
+            <button onclick="closeAddCycleModal()" class="modal-close">&times;</button>
+        </div>
+        
+        <form id="addCycleForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Cycle Day <span class="required">*</span></label>
+                    <input type="number" id="cycleDay" min="1" max="40" required 
+                           placeholder="e.g., 1, 2, 3..." class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Flow Level</label>
+                    <select id="flowLevel" class="form-select">
+                        <option value="">Select flow level</option>
+                        <option value="spotting">Spotting</option>
+                        <option value="light">Light</option>
+                        <option value="medium">Medium</option>
+                        <option value="heavy">Heavy</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Symptoms</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Cramps" class="symptom-check"> Cramps
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Bloating" class="symptom-check"> Bloating
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Headache" class="symptom-check"> Headache
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Fatigue" class="symptom-check"> Fatigue
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Nausea" class="symptom-check"> Nausea
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Acne" class="symptom-check"> Acne
+                        </label>
+                    </div>
+                    <textarea id="otherSymptoms" placeholder="Other symptoms (e.g., back pain, breast tenderness)" 
+                              rows="2" class="form-textarea"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mood</label>
+                    <select id="cycleMood" class="form-select">
+                        <option value="">Select mood</option>
+                        <option>😊 Happy</option>
+                        <option>😐 Neutral</option>
+                        <option>😔 Sad</option>
+                        <option>😠 Irritable</option>
+                        <option>😴 Tired</option>
+                        <option>🥺 Emotional</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="cycleNotes" rows="2" 
+                              placeholder="Any additional notes about today..." 
+                              class="form-textarea"></textarea>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" onclick="closeAddCycleModal()" class="btn-secondary">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Entry
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function loadCycleLogs() {
+    fetch('/api/cycle')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('totalLogs').textContent = data.length;
+            
+            if (data.length > 0) {
+                const latest = data[0];
+                document.getElementById('currentDay').textContent = latest.cycle_day || '-';
+                
+                // Calculate average cycle length
+                if (data.length >= 2) {
+                    const lengths = [];
+                    for (let i = 0; i < data.length - 1; i++) {
+                        const diff = Math.abs(data[i].cycle_day - data[i+1].cycle_day);
+                        if (diff > 0 && diff < 40) lengths.push(diff);
+                    }
+                    if (lengths.length > 0) {
+                        const avgLength = Math.round(lengths.reduce((a,b) => a+b, 0) / lengths.length);
+                        document.getElementById('cycleLength').textContent = avgLength;
+                    }
+                }
+            }
+            
+            const container = document.getElementById('cycleLogsList');
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🌸</div>
+                        <div class="empty-state-text">No cycle logs yet. Start tracking your cycle to understand your patterns!</div>
+                        <button onclick="openAddCycleModal()" class="btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-plus"></i> Log Your First Day
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = data.map(log => `
+                <div class="cycle-card">
+                    <div class="cycle-header">
+                        <div class="cycle-day">
+                            <span class="cycle-icon">🌸</span>
+                            <span class="cycle-number">Day ${log.cycle_day}</span>
+                        </div>
+                        ${log.flow_level ? `
+                            <span class="flow-badge flow-${log.flow_level}">
+                                <i class="fas fa-tint"></i>
+                                ${log.flow_level.charAt(0).toUpperCase() + log.flow_level.slice(1)}
+                            </span>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="cycle-details">
+                        ${log.symptoms ? `
+                            <div class="detail-section">
+                                <div class="detail-title">Symptoms</div>
+                                <div class="symptom-tags">
+                                    ${log.symptoms.split(',').map(s => `
+                                        <span class="symptom-tag">${escapeHtml(s.trim())}</span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${log.mood ? `
+                            <div class="detail-section">
+                                <div class="detail-title">Mood</div>
+                                <div class="mood-tag">
+                                    ${escapeHtml(log.mood)}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${log.notes ? `
+                            <div class="cycle-notes">
+                                <i class="fas fa-pen" style="margin-right: 0.5rem;"></i>
+                                ${escapeHtml(log.notes)}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="cycle-date">
+                        <i class="far fa-calendar-alt"></i>
+                        ${formatDateTime(log.logged_at)}
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+document.getElementById('addCycleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const cycleDay = parseInt(document.getElementById('cycleDay').value);
+    if (!cycleDay || cycleDay < 1 || cycleDay > 40) {
+        showToast('Please enter a valid cycle day (1-40)', 'error');
+        return;
+    }
+    
+    const symptoms = Array.from(document.querySelectorAll('.symptom-check:checked'))
+        .map(cb => cb.value)
+        .concat(document.getElementById('otherSymptoms').value ? [document.getElementById('otherSymptoms').value] : [])
+        .join(', ');
+    
+    const cycleData = {
+        cycle_day: cycleDay,
+        flow_level: document.getElementById('flowLevel').value,
+        symptoms: symptoms,
+        mood: document.getElementById('cycleMood').value,
+        notes: document.getElementById('cycleNotes').value
+    };
+    
+    fetch('/api/cycle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(cycleData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        showToast('Cycle logged successfully! +2 points', 'success');
+        closeAddCycleModal();
+        document.getElementById('addCycleForm').reset();
+        document.querySelectorAll('.symptom-check').forEach(cb => cb.checked = false);
+        loadCycleLogs();
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+function openAddCycleModal() {
+    document.getElementById('addCycleModal').classList.add('active');
+}
+
+function closeAddCycleModal() {
+    document.getElementById('addCycleModal').classList.remove('active');
+    document.getElementById('addCycleForm').reset();
+    document.querySelectorAll('.symptom-check').forEach(cb => cb.checked = false);
+}
+
+function formatDateTime(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleString('en-ZA', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', loadCycleLogs);
+</script>
+{% endblock %}
