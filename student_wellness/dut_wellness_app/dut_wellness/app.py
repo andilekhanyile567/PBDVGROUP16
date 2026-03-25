@@ -2467,11 +2467,5 @@ if __name__ == '__main__':
         migrate_database()
         seed_database()
 
-    scheduler = threading.Thread(target=run_background_scheduler, daemon=True)
-    scheduler.start()
-    print('[Scheduler] Background thread started — checks every 30 minutes')
-    print('  → Inactivity reminders : every 12 hours')
-    print('  → Meeting reminders     : 45 minutes before each meeting')
-    print('  → Event reminders      : 24 h and 1 h before each event')
 
     app.run(debug=True, port=5000)
