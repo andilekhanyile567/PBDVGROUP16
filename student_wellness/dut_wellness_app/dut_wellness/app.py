@@ -504,10 +504,25 @@ def email_booking_new(booking, student, counsellor):
         <p style="margin-top:14px;font-size:.75rem;color:#94a3b8;text-align:center;">DUT Wellness Centre · Automated notification</p>
       </div></div>"""
 
-    send_email(counsellor.email, f'New Session Request from {student.full_name}',
-               f'New booking from {student.full_name} for a {booking.session_type} session.', c_html)
-    send_email(student.email, 'Your Booking Request Has Been Submitted – DUT Wellness',
-               f'Your session request has been submitted. {counsellor.full_name} will confirm soon.', s_html)
+try:
+    send_email(
+        counsellor.email,
+        f'New Session Request from {student.full_name}',
+        f'New booking from {student.full_name} for a {booking.session_type} session.',
+        c_html
+    )
+except Exception as e:
+    print(f"[Booking email to counsellor failed] {e}")
+
+try:
+    send_email(
+        student.email,
+        'Your Booking Request Has Been Submitted – DUT Wellness',
+        f'Your session request has been submitted. {counsellor.full_name} will confirm soon.',
+        s_html
+    )
+except Exception as e:
+    print(f"[Booking email to student failed] {e}")
 
 
 def email_booking_update(booking, student, status, counsellor_name='Your counsellor'):
@@ -1788,7 +1803,7 @@ def rewards():
                  .filter(User.role == 'student', StudentReward.total_points > reward.total_points).count())
         user_rank = above + 1
 
-    return render_template('rewards.html', reward=reward, logs=logs,
+    return render_template('admin_rewards.html', reward=reward, logs=logs,
                            leaderboard=leaderboard, user_rank=user_rank)
 
 
@@ -2004,7 +2019,7 @@ def booking():
                 email_booking_new(b, current_user, User.query.get(int(c_id)))
             except Exception as e:
                 print(f'[Booking email error] {e}')
-        flash('Booking submitted! Confirmation email sent.', 'success')
+        flash('Booking submitted successfully.', 'success')
         return redirect(url_for('student_dashboard'))
     return render_template('booking.html', counsellors=counsellors)
 
