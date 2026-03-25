@@ -908,7 +908,7 @@ def run_background_scheduler():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for(f'{current_user.role}_dashboard'))
+    return f"Authenticated. Role = {current_user.role}, User ID = {current_user.id}"
     if request.method == 'POST':
         ident = request.form.get('identifier', '').strip()
         pw = request.form.get('password', '')
