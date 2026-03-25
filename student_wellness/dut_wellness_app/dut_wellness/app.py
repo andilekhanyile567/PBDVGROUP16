@@ -505,24 +505,25 @@ def email_booking_new(booking, student, counsellor):
       </div></div>"""
 
 try:
-    send_email(
-        counsellor.email,
-        f'New Session Request from {student.full_name}',
-        f'New booking from {student.full_name} for a {booking.session_type} session.',
-        c_html
-    )
-except Exception as e:
-    print(f"[Booking email to counsellor failed] {e}")
+        send_email(
+            counsellor.email,
+            f'New Session Request from {student.full_name}',
+            f'New booking from {student.full_name} for a {booking.session_type} session.',
+            c_html
+        )
+    except Exception as e:
+        print(f"[Booking email to counsellor failed] {e}")
 
-try:
-    send_email(
-        student.email,
-        'Your Booking Request Has Been Submitted – DUT Wellness',
-        f'Your session request has been submitted. {counsellor.full_name} will confirm soon.',
-        s_html
-    )
-except Exception as e:
-    print(f"[Booking email to student failed] {e}")
+    # ✅ EMAIL TO STUDENT
+    try:
+        send_email(
+            student.email,
+            'Your Booking Request Has Been Submitted – DUT Wellness',
+            f'Your session request has been submitted. {counsellor.full_name} will confirm soon.',
+            s_html
+        )
+    except Exception as e:
+        print(f"[Booking email to student failed] {e}")
 
 
 def email_booking_update(booking, student, status, counsellor_name='Your counsellor'):
