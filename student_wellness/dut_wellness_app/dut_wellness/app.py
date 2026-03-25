@@ -504,7 +504,7 @@ def email_booking_new(booking, student, counsellor):
         <p style="margin-top:14px;font-size:.75rem;color:#94a3b8;text-align:center;">DUT Wellness Centre · Automated notification</p>
       </div></div>"""
 
-try:
+    try:
         send_email(
             counsellor.email,
             f'New Session Request from {student.full_name}',
