@@ -904,12 +904,7 @@ def run_background_scheduler():
 # =============================================================================
 #  AUTH ROUTES
 # =============================================================================
-@app.route('/')
-def home():
-    return "App is running", 200
-@app.route('/health')
-def health():
-    return "OK", 200
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
