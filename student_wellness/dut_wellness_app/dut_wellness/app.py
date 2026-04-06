@@ -15,7 +15,7 @@ import os
 import json
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_hex(32)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///wellness.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -29,6 +29,31 @@ MAIL_FROM     = f'DUT Wellness Centre <{MAIL_USERNAME}>'
 db            = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+# =============================================================================
+#  GLOBAL LOGIN ENFORCEMENT
+# =============================================================================
+
+@app.before_request
+def require_login():
+    # List of endpoints that do NOT require authentication
+    public_endpoints = [
+        'login',           # the login page itself
+        'register',        # registration page
+        'forgot_password', # request password reset link
+        'reset_password',  # reset password with token
+        'static',          # CSS/JS files
+        'health',          # health check endpoint (we'll add it)
+        'crisis'           # public crisis resources page
+    ]
+    
+    # If the requested endpoint is public → allow access
+    if request.endpoint in public_endpoints:
+        return None
+    
+    # Otherwise, require the user to be logged in
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
 
 
 # =============================================================================
@@ -905,6 +930,7 @@ def run_background_scheduler():
 #  AUTH ROUTES
 # =============================================================================
 
+@app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
