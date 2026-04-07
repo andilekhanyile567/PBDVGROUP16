@@ -472,21 +472,25 @@ def send_email(to, subject, body, html=None):
     try:
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
-        msg['From']    = MAIL_FROM
-        msg['To']      = to
+        msg['From'] = MAIL_FROM          # Display name + address (for the user)
+        msg['To'] = to
+
         msg.attach(MIMEText(body, 'plain'))
         if html:
             msg.attach(MIMEText(html, 'html'))
-        with smtplib.SMTP(MAIL_SERVER, MAIL_PORT) as s:
+
+        with smtplib.SMTP(MAIL_SERVER, MAIL_PORT, timeout=10) as s:
             s.ehlo()
-            s.starttls()
+            if MAIL_PORT == 587:
+                s.starttls()
+                s.ehlo()
             s.login(MAIL_USERNAME, MAIL_PASSWORD)
-            s.sendmail(MAIL_USERNAME, to, msg.as_string())
+            s.sendmail(MAIL_USERNAME, to, msg.as_string())   # Envelope sender = raw email
+
         return True
     except Exception as e:
         print(f'[Email error] {e}')
         return False
-
 
 # =============================================================================
 #  EMAIL BUILDERS — BOOKINGS
