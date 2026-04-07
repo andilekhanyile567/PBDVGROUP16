@@ -809,6 +809,11 @@ def award_checkin_points(user):
         reward = StudentReward(user_id=user.id)
         db.session.add(reward)
 
+    # Convert any None values to 0 for numeric fields (fix for existing NULL rows)
+    for attr in ('total_checkins', 'total_points', 'current_streak', 'longest_streak'):
+        if getattr(reward, attr) is None:
+            setattr(reward, attr, 0)
+
     logs = []
     earned = 0
 
@@ -819,6 +824,7 @@ def award_checkin_points(user):
     if reward.last_checkin_date is None:
         reward.current_streak = 1
     elif reward.last_checkin_date == today:
+        # Already checked in today → do nothing (no streak increase)
         pass
     elif reward.last_checkin_date == today - timedelta(days=1):
         reward.current_streak += 1
