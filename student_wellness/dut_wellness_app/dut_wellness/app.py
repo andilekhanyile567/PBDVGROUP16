@@ -473,7 +473,7 @@ def send_email(to, subject, body, html=None):
     try:
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
-        msg['From'] = MAIL_FROM          # Display name + address (for the user)
+        msg['From'] = MAIL_FROM
         msg['To'] = to
 
         msg.attach(MIMEText(body, 'plain'))
@@ -485,12 +485,15 @@ def send_email(to, subject, body, html=None):
             if MAIL_PORT == 587:
                 s.starttls()
                 s.ehlo()
+            # SendGrid requires 'apikey' as username, but envelope sender must be your verified email
             s.login(MAIL_USERNAME, MAIL_PASSWORD)
-            s.sendmail(MAIL_USERNAME, to, msg.as_string())   # Envelope sender = raw email
+            s.sendmail(MAIL_FROM, to, msg.as_string())   # Changed envelope sender to MAIL_FROM
 
         return True
     except Exception as e:
+        import traceback
         print(f'[Email error] {e}')
+        print(f'[Email traceback] {traceback.format_exc()}')
         return False
 
 # =============================================================================
