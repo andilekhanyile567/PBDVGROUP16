@@ -20,11 +20,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///wellness.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Email settings (Gmail SMTP)
-MAIL_SERVER   = 'smtp.gmail.com'
-MAIL_PORT     = 587
-MAIL_USERNAME = 'nkosikhonashabane16@gmail.com'
-MAIL_PASSWORD = 'sdcixbzaflyigdwy'
-MAIL_FROM     = f'DUT Wellness Centre <{MAIL_USERNAME}>'
+ 
+MAIL_SERVER = 'smtp.sendgrid.net'
+MAIL_PORT = 2525
+MAIL_USERNAME = 'apikey'    # all lowercase
+MAIL_PASSWORD = os.environ.get('SENDGRID_API_KEY', '')
+MAIL_FROM = 'DUT Wellness Centre <nkosikhonashabane16@gmail.com>'
 
 db            = SQLAlchemy(app)
 login_manager = LoginManager(app)
