@@ -482,12 +482,11 @@ def send_email(to, subject, body, html=None):
 
         with smtplib.SMTP(MAIL_SERVER, MAIL_PORT, timeout=10) as s:
             s.ehlo()
-            if MAIL_PORT == 587:
+            if MAIL_PORT in (587, 2525):   # ← critical fix
                 s.starttls()
                 s.ehlo()
-            # SendGrid requires 'apikey' as username, but envelope sender must be your verified email
             s.login(MAIL_USERNAME, MAIL_PASSWORD)
-            s.sendmail(MAIL_FROM, to, msg.as_string())   # Changed envelope sender to MAIL_FROM
+            s.sendmail(MAIL_FROM, to, msg.as_string())
 
         return True
     except Exception as e:
